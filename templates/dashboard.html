@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Service Center Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #ecf0f1;
+            color: #34495e;
+        }
+
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            width: 250px;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            transition: width 0.3s;
+        }
+
+        .sidebar h2 {
+            margin: 0 0 20px;
+            font-size: 1.5em;
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin: 15px 0;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: color 0.3s;
+        }
+
+        .sidebar a:hover {
+            text-decoration: underline;
+            color: #1abc9c;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            background-color: #ecf0f1;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        .search-bar {
+            padding: 10px;
+            width: 220px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border 0.3s;
+        }
+
+        .search-bar:focus {
+            border-color: #2c3e50;
+            outline: none;
+        }
+
+        .profile {
+            position: relative;
+        }
+
+        .notification-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 250px;
+            border-radius: 4px;
+        }
+
+        .notification-dropdown.active {
+            display: block;
+        }
+
+        .notification-item {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            transition: background 0.3s;
+        }
+
+        .notification-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.visible {
+            display: block;
+        }
+
+        .financial-management, .inventory-form, .form-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .transaction-list ul, .vehicle-table, .user-table {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .delete-button {
+            color: #e74c3c;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: bold;
+        }
+
+        .delete-button:hover {
+            color: #c0392b;
+        }
+
+        .service-management {
+            margin-bottom: 20px;
+        }
+
+        .service-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .service-table th, .service-table td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        .service-table th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .add-service {
+            margin-bottom: 10px;
+        }
+
+        .add-service input {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: calc(100% - 120px);
+        }
+
+        .add-service button, .notification-form button {
+            padding: 10px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .add-service button:hover, .notification-form button:hover {
+            background-color: #1abc9c;
+        }
+
+        .notification-form {
+            margin-bottom: 20px;
+        }
+
+        .notification-form input {
+            padding: 10px;
+            width: 70%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+            <li><a href="#" onclick="showSection('financialSection')">Financial Management</a></li>
+            <li><a href="#" onclick="showSection('inventorySection')">Inventory Management</a></li>
+            <li><a href="#" onclick="showSection('userSection')">User Management</a></li>
+            <li><a href="#" onclick="showSection('vehicleSection')">Vehicle Management</a></li>
+            <li><a href="#" onclick="showSection('serviceSection')">Service Management</a></li>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="header">
+            <input type="text" class="search-bar" placeholder="Search...">
+            <div class="profile">
+                <img src="profile.png" alt="Profile" onclick="toggleNotifications()" style="cursor: pointer; width: 40px; height: 40px; border-radius: 50%;">
+                <div class="notification-dropdown">
+                    <div id="notification-list">
+                        <div class="notification-item">Notification 1</div>
+                        <div class="notification-item">Notification 2</div>
+                        <div class="notification-item">Notification 3</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="notification-form">
+            <input type="text" id="new-notification" placeholder="Add new notification">
+            <button onclick="addNotification()">Add Notification</button>
+        </div>
+
+        <div class="section visible" id="financialSection">
+            <h1>Financial Management</h1>
+            <div class="financial-management">
+                <div class="financial-summary">
+                    <p>Total Income: $<span id="total-income">5000</span></p>
+                    <p>Total Expenses: $<span id="total-expenses">2000</span></p>
+                    <p>Net Profit: $<span id="net-profit">3000</span></p>
+                </div>
+                <div class="add-transaction">
+                    <label for="transaction-type">Transaction Type:</label>
+                    <select id="transaction-type">
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                    <label for="transaction-amount">Amount:</label>
+                    <input type="number" id="transaction-amount" placeholder="Enter amount">
+                    <button onclick="addTransaction()">Add Transaction</button>
+                </div>
+                <div class="transaction-list">
+                    <h2>Transaction List</h2>
+                    <ul id="transaction-list">
+                        <!-- Transaction items will be added dynamically -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section hidden" id="inventorySection">
+            <h1>Inventory Management</h1>
+            <div class="inventory-form">
+                <input type="text" id="inventory-item" placeholder="Item Name">
+                <input type="number" id="inventory-quantity" placeholder="Quantity">
+                <button onclick="addInventoryItem()">Add Item</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-list">
+                    <!-- Inventory items will be added dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section hidden" id="userSection">
+            <h1>User Management</h1>
+            <div class="user-management">
+                <h2>User List</h2>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-list">
+                        <!-- User items will be added dynamically -->
+                    </tbody>
+                </table>
+                <div class="add-user">
+                    <input type="text" id="user-name" placeholder="User Name">
+                    <input type="email" id="user-email" placeholder="User Email">
+                    <button onclick="addUser()">Add User</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section hidden" id="vehicleSection">
+            <h1>Vehicle Management</h1>
+            <div class="vehicle-management">
+                <h2>Vehicle List</h2>
+                <table class="vehicle-table">
+                    <thead>
+                        <tr>
+                            <th>Vehicle Model</th>
+                            <th>Owner Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vehicle-list">
+                        <!-- Vehicle items will be added dynamically -->
+                    </tbody>
+                </table>
+                <div class="add-vehicle">
+                    <input type="text" id="vehicle-model" placeholder="Vehicle Model">
+                    <input type="text" id="owner-name" placeholder="Owner Name">
+                    <button onclick="addVehicle()">Add Vehicle</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section hidden" id="serviceSection">
+            <h1>Service Management</h1>
+            <div class="service-management">
+                <div class="add-service">
+                    <input type="text" id="service-name" placeholder="Service Name">
+                    <input type="number" id="service-price" placeholder="Service Price">
+                    <button onclick="addService()">Add Service</button>
+                </div>
+                <table class="service-table">
+                    <thead>
+                        <tr>
+                            <th>Service Name</th>
+                            <th>Service Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="service-list">
+                        <!-- Service items will be added dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleNotifications() {
+            const dropdown = document.querySelector('.notification-dropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        function addNotification() {
+            const notificationInput = document.getElementById('new-notification').value.trim();
+            if (notificationInput) {
+                const notificationList = document.getElementById('notification-list');
+                const notificationItem = document.createElement('div');
+                notificationItem.className = 'notification-item';
+                notificationItem.textContent = notificationInput;
+                notificationList.appendChild(notificationItem);
+                document.getElementById('new-notification').value = '';
+            }
+        }
+
+        function addTransaction() {
+            const transactionType = document.getElementById('transaction-type').value;
+            const transactionAmount = document.getElementById('transaction-amount').value.trim();
+            if (transactionAmount) {
+                const transactionList = document.getElementById('transaction-list');
+                const transactionItem = document.createElement('li');
+                transactionItem.textContent = `${transactionType.charAt(0).toUpperCase() + transactionType.slice(1)}: $${transactionAmount}`;
+                transactionList.appendChild(transactionItem);
+
+                const totalIncome = parseFloat(document.getElementById('total-income').innerText);
+                const totalExpenses = parseFloat(document.getElementById('total-expenses').innerText);
+                if (transactionType === 'income') {
+                    document.getElementById('total-income').innerText = totalIncome + parseFloat(transactionAmount);
+                } else {
+                    document.getElementById('total-expenses').innerText = totalExpenses + parseFloat(transactionAmount);
+                }
+                document.getElementById('transaction-amount').value = '';
+                updateNetProfit();
+            }
+        }
+
+        function updateNetProfit() {
+            const totalIncome = parseFloat(document.getElementById('total-income').innerText);
+            const totalExpenses = parseFloat(document.getElementById('total-expenses').innerText);
+            document.getElementById('net-profit').innerText = totalIncome - totalExpenses;
+        }
+
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('visible');
+                if (section.id === sectionId) {
+                    section.classList.add('visible');
+                }
+            });
+        }
+
+        function addInventoryItem() {
+            const itemName = document.getElementById('inventory-item').value.trim();
+            const itemQuantity = document.getElementById('inventory-quantity').value.trim();
+            if (itemName && itemQuantity) {
+                const inventoryList = document.getElementById('inventory-list');
+                const inventoryRow = document.createElement('tr');
+                inventoryRow.innerHTML = `
+                    <td>${itemName}</td>
+                    <td>${itemQuantity}</td>
+                    <td><button class="delete-button" onclick="deleteInventoryItem(this)">Delete</button></td>
+                `;
+                inventoryList.appendChild(inventoryRow);
+                document.getElementById('inventory-item').value = '';
+                document.getElementById('inventory-quantity').value = '';
+            }
+        }
+
+        function deleteInventoryItem(button) {
+            const row = button.parentElement.parentElement;
+            row.parentElement.removeChild(row);
+        }
+
+        function addUser() {
+            const userName = document.getElementById('user-name').value.trim();
+            const userEmail = document.getElementById('user-email').value.trim();
+            if (userName && userEmail) {
+                const userList = document.getElementById('user-list');
+                const userRow = document.createElement('tr');
+                userRow.innerHTML = `
+                    <td>${userName}</td>
+                    <td>${userEmail}</td>
+                    <td><button class="delete-button" onclick="deleteUser(this)">Delete</button></td>
+                `;
+                userList.appendChild(userRow);
+                document.getElementById('user-name').value = '';
+                document.getElementById('user-email').value = '';
+            }
+        }
+
+        function deleteUser(button) {
+            const row = button.parentElement.parentElement;
+            row.parentElement.removeChild(row);
+        }
+
+        function addVehicle() {
+            const vehicleModel = document.getElementById('vehicle-model').value.trim();
+            const ownerName = document.getElementById('owner-name').value.trim();
+            if (vehicleModel && ownerName) {
+                const vehicleList = document.getElementById('vehicle-list');
+                const vehicleRow = document.createElement('tr');
+                vehicleRow.innerHTML = `
+                    <td>${vehicleModel}</td>
+                    <td>${ownerName}</td>
+                    <td><button class="delete-button" onclick="deleteVehicle(this)">Delete</button></td>
+                `;
+                vehicleList.appendChild(vehicleRow);
+                document.getElementById('vehicle-model').value = '';
+                document.getElementById('owner-name').value = '';
+            }
+        }
+
+        function deleteVehicle(button) {
+            const row = button.parentElement.parentElement;
+            row.parentElement.removeChild(row);
+        }
+
+        function addService() {
+            const serviceName = document.getElementById('service-name').value.trim();
+            const servicePrice = document.getElementById('service-price').value.trim();
+            if (serviceName && servicePrice) {
+                const serviceList = document.getElementById('service-list');
+                const serviceRow = document.createElement('tr');
+                serviceRow.innerHTML = `
+                    <td>${serviceName}</td>
+                    <td>$${servicePrice}</td>
+                    <td><button class="delete-button" onclick="deleteService(this)">Delete</button></td>
+                `;
+                serviceList.appendChild(serviceRow);
+                document.getElementById('service-name').value = '';
+                document.getElementById('service-price').value = '';
+            }
+        }
+
+        function deleteService(button) {
+            const row = button.parentElement.parentElement;
+            row.parentElement.removeChild(row);
+        }
+    </script>
+</body>
+</html>

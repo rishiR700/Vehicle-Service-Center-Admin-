@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Service Center Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background: url('https://wallpaperaccess.com/full/2056736.jpg') no-repeat center center fixed; /* Background image */
+            background-size: cover; /* Ensures the image covers the entire background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 450px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9); /* Slightly transparent background */
+            border-radius: 10px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: scale(1.02);
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            font-size: 28px;
+            color: #34495e;
+        }
+
+        label {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #555;
+            display: block;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #f39c12;
+            box-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
+            outline: none; /* Remove default outline */
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #f39c12;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        #validationMessage {
+            margin-top: 10px;
+            font-size: 14px;
+            color: red;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #f39c12;
+        }
+
+        .links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #888;
+            text-align: center;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-top: 60px;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover, .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .password-strength {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .strength-weak { color: red; }
+        .strength-medium { color: orange; }
+        .strength-strong { color: green; }
+
+        /* Accessibility Styles */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            button, input {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" role="form">
+        <h2>LOGIN</h2>
+        <div id="validationMessage" role="alert"></div>
+        <label for="username">Username</label>
+        <input type="text" placeholder="Enter your username" id="username" aria-required="true" required>
+        <label for="password">Password</label>
+        <input type="password" placeholder="Enter your password" id="password" aria-required="true" required>
+        <div class="password-strength" id="passwordStrength"></div>
+        <label>
+            <input type="checkbox" id="rememberMe"> Remember Me
+        </label>
+        <button id="loginButton" aria-label="Login">Login</button>
+        <div class="loading" id="loading" aria-live="polite">Loading...</div>
+        <div class="links">
+            <a href="#" id="openModal">Create Account</a>
+            <a href="#" id="forgotPasswordLink">Forgot Password?</a>
+        </div>
+    </div>
+
+    <!-- Modal for Account Creation -->
+    <div id="accountModal" class="modal" role="dialog" aria-labelledby="accountModalTitle" aria-modal="true">
+        <div class="modal-content">
+            <span class="close" id="closeModal" aria-label="Close modal">&times;</span>
+            <h2 id="accountModalTitle">Create Account</h2>
+            <label for="newUsername">Username</label>
+            <input type="text" id="newUsername" aria-required="true" required>
+            <label for="newPassword">Password</label>
+            <input type="password" id="newPassword" aria-required="true" required>
+            <div class="password-strength" id="accountPasswordStrength"></div>
+            <button id="createAccountButton" aria-label="Create Account">Create Account</button>
+            <div id="accountMessage" style="color: red;"></div>
+        </div>
+    </div>
+
+    <!-- Modal for Forgot Password -->
+    <div id="forgotPasswordModal" class="modal" role="dialog" aria-labelledby="forgotPasswordModalTitle" aria-modal="true">
+        <div class="modal-content">
+            <span class="close" id="closeForgotModal" aria-label="Close modal">&times;</span>
+            <h2 id="forgotPasswordModalTitle">Forgot Password</h2>
+            <label for="forgotUsername">Username</label>
+            <input type="text" id="forgotUsername" aria-required="true" required>
+            <button id="resetPasswordButton" aria-label="Reset Password">Reset Password</button>
+            <div id="resetMessage" style="color: red;"></div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 Vehicle Service Center
+    </footer>
+
+    <script>
+        const users = {
+            'user1': 'password1',
+            'user2': 'password2',
+        };
+
+        const validationMessage = document.getElementById('validationMessage');
+
+        // Toggle Loading Indicator
+        document.getElementById('loginButton').addEventListener('click', function () {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            validationMessage.textContent = '';
+            document.getElementById('loading').style.display = 'block'; // Show loading indicator
+
+            setTimeout(() => { // Simulate a delay for login process
+                if (users[username] && users[username] === password) {
+                    validationMessage.textContent = 'Login successful!';
+                    validationMessage.style.color = 'green';
+                    // Redirect to dashboard.html after login success
+                    window.location.href = 'dashboard.html';
+                } else {
+                    validationMessage.textContent = 'Invalid username or password!';
+                }
+                document.getElementById('loading').style.display = 'none'; // Hide loading indicator
+            }, 1000); // Simulate 1 second delay
+        });
+
+        // Modal Handling
+        document.getElementById('openModal').addEventListener('click', function () {
+            document.getElementById('accountModal').style.display = 'block';
+        });
+
+        document.getElementById('closeModal').addEventListener('click', function () {
+            document.getElementById('accountModal').style.display = 'none';
+        });
+
+        document.getElementById('closeForgotModal').addEventListener('click', function () {
+            document.getElementById('forgotPasswordModal').style.display = 'none';
+        });
+
+        // Additional event listeners and functions for account creation and password reset can be added here.
+    </script>
+</body>
+</html>
